@@ -120,9 +120,9 @@ def handle_opts():
         elif o in ('-p', '--pathways'):
             settings['pathways'] = a
         elif o in ('-t', '--test_condition'):
-            settings['test'] = None
+            settings['test'] = a
         elif o in ('-c', '--control_condition'):
-            settings['control'] = None
+            settings['control'] = a
         else:
             usage('Option not recognized: %s' % o)
 
@@ -158,11 +158,12 @@ def generate_missing(settings):
     # calculate_sa creates gene_presence/%s_top85_gt_1.txt
     # * calculate_auc creates auc_results/%s_results_reweight_RAW.txt
     # * calculate_perm_test creates auc_results/%s_perm_test_4_500.txt
-    # calculate_sig_connections creates sig_connections/%s_sig_connections_95.txt
+    # @ calculate_sig_connections creates sig_connections/%s_sig_connections_95.txt
     # calculate_enhancement creates auc_results/%s_vs_%s_thresh_95.txt
     
     # * denotes activities that can occur simultaneously
-    
+    # @ denotes I have tested this to make sure it works
+
     for fn, datafile in [(fn1, settings['test']), (fn2, settings['control'])]:
         print
         print('Looking for required %s files and generating them if needed...' % fn)
@@ -187,7 +188,7 @@ def generate_missing(settings):
             print('Found permutation test results')
     
         if not os.path.exists('sig_connections/%s_sig_connections_95.txt' % fn):
-            print('Significant connection matrix not found, building..')
+            print('Significant connection matrix not found, building...')
             calculate_sig_connections(fn)
         else:
             print('Found significant connection matrix')
