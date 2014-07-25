@@ -188,7 +188,7 @@ def generate_missing(settings):
                     except:
                         pass
 
-        if os.path.exists('auc_results/%s_results_reweight_RAW.txt' % fn):
+        if not os.path.exists('auc_results/%s_results_reweight_RAW.txt' % fn):
             print('AUC results not found, building...')
             calculate_auc(fn, fln, pathway_dict, path_names)
         else:
