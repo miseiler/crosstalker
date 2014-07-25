@@ -178,21 +178,22 @@ def generate_missing(settings):
         else:
             print('Found gene presence definitions')
     
-        if not os.path.exists('auc_results/%s_results_reweight_RAW.txt' % fn):
+        if os.path.exists('auc_results/%s_results_reweight_RAW.txt' % fn):
+            s = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn)
+            if not s.sample_ids == path_names:
+                print('New pathway definitions detected! Attempting to remove old results...')
+                for f in ('auc_results/%s_results_reweight_RAW.txt' % fn, 'auc_results/%s_perm_test_4_500.txt' % fn, 'sig_connections/%s_sig_connections_95.txt' % fn, 'auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2)):
+                    try:
+                        os.remove(f)
+                    except:
+                        pass
+
+        if os.path.exists('auc_results/%s_results_reweight_RAW.txt' % fn):
             print('AUC results not found, building...')
             calculate_auc(fn, fln, pathway_dict, path_names)
         else:
             print('Found AUC results')
 
-        s = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn)
-        if not s.sample_ids == list(s.gene_names) and s.sample_ids == path_names:
-            print('New pathway definitions detected! Attempting to remove old results...')
-            for f in ('auc_results/%s_perm_test_4_500.txt' % fn, 'sig_connections/%s_sig_connections_95.txt' % fn, 'auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2)):
-                try:
-                    os.remove(f)
-                except:
-                    pass
-    
         if not os.path.exists('auc_results/%s_perm_test_4_500.txt' % fn):
             print('Permutation test results not found, building...')
             calculate_perm_test(fn, fln)
@@ -243,6 +244,7 @@ if __name__ == '__main__':
     # TODO: AUC and perm test can be done simultaneously
 
     settings = handle_opts()
+    dirstruct()
     fn1, fn2, pathway_dict = generate_missing(settings)
 
     treeio.create_tree(fn1, fn2, pathway_dict)
