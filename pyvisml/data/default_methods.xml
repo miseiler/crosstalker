@@ -1,0 +1,112 @@
+<DefaultMethods>
+    <method name="M0015" desc="Electron microscopy" weight="null" type="E" visible="true" species="rsion=" color="255,0,0"/>
+    <method name="M0014" desc="cross-linking studies" weight="0" type="E" visible="true" species="rsion=" color="176,48,96"/>
+    <method name="M0079" desc="Co-fractionation" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0013" desc="copurification" weight="0" type="E" visible="true" species="rsion=" color="85,26,139"/>
+    <method name="M0078" desc="Protein-RNA" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0012" desc="Competition binding" weight="0" type="E" visible="true" species="rsion=" color="12,254,34"/>
+    <method name="M0077" desc="Dosage Rescue" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0011" desc="Co-sedimentation " weight="null" type="E" visible="true" species="rsion=" color="84,117,184"/>
+    <method name="M0076" desc="Dosage Lethality" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0010" desc="coimmunoprecipitation" weight="0" type="E" visible="true" species="rsion=" color="25,110,6"/>
+    <method name="M0075" desc="Phenotypic Enhancement" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0074" desc="Reconstituted Complex" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0073" desc="Invivo" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0072" desc="imaging techniques" weight="0" type="E" visible="true" color="0,0,0"/>
+    <method name="M0071" desc="x-ray crystallography" weight="0" type="E" visible="true" color="0,0,0"/>
+    <method name="M0070" desc="nuclear magnetic resonance" weight="0" type="E" visible="true" color="0,0,0"/>
+    <method name="M0106" desc="Predicted Arabidopsis molecular interactions (PAIR)" weight="null" type="C" visible="true" color="0,0,0"/>
+    <method name="M0105" desc="Positive Genetic" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M9901" desc="Connection of Shared Components" weight="0" type="C" visible="true" species="rsion=" color="185,191,180"/>
+    <method name="M0104" desc="Negative Genetic" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M0103" desc="isothermal titration calorimetry" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M0102" desc="solid phase assay" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M0101" desc="phosphatase assay" weight="null" type="E" visible="true" color="255,0,0"/>
+    <method name="M0100" desc="ubiquitin reconstruction" weight="null" type="E" visible="true" color="0,255,0"/>
+    <method name="M0006" desc="Affinity Column" weight="0" type="E" visible="true" species="rsion=" color="191,88,3"/>
+    <method name="M0069" desc="protein complementation assay" weight="0" type="E" visible="true" color="0,0,0"/>
+    <method name="M0068" desc="protein array" weight="0" type="E" visible="true" color="0,0,0"/>
+    <method name="M0067" desc="pull down" weight="0" type="E" visible="true" color="0,0,0"/>
+    <method name="M0066" desc="enzymatic study" weight="0" type="E" visible="true" color="0,0,0"/>
+    <method name="M1005" desc="COG - Homologies " weight="null" type="null" visible="true" species="rsion=" color="255,82,4"/>
+    <method name="M0065" desc="anti tag coimmunoprecipitation" weight="0" type="E" visible="true" color="0,0,0"/>
+    <method name="M1004" desc="GeneQuiz - Marginal Similarity " weight="null" type="null" visible="true" species="rsion=" color="0,69,198"/>
+    <method name="M0064" desc="TFSVM (Predicted TF by SVM)" weight="0" type="C" visible="false" color="200,25,100"/>
+    <method name="M1003" desc="EUROFAN - Disruption " weight="null" type="null" visible="true" species="rsion=" color="255,85,106"/>
+    <method name="M0063" desc="colocalization/visualisation technologies" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M1002" desc="SGD - Gene Registry" weight="null" type="null" visible="true" species="rsion=" color="255,150,47"/>
+    <method name="M0062" desc="electron microscopy" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M1001" desc="GeneQuiz - Clear Similarity" weight="null" type="null" visible="true" species="rsion=" color="34,150,47"/>
+    <method name="M0061" desc="resonance energy transfer" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M1000" desc="GeneQuiz - 3D Homology " weight="null" type="null" visible="true" species="rsion=" color="34,150,209"/>
+    <method name="M0060" desc="far western blotting" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M5001" desc="Tandem Affinity Mass. Spec Complex Determination from Gavin, et al." weight="null" type="g" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M0059" desc="genetic synthetic phenotype" weight="null" type="E" visible="true" species="rsion=" color="193,100,42"/>
+    <method name="M0058" desc="genetic suppression" weight="null" type="E" visible="true" species="rsion=" color="28,144,242"/>
+    <method name="M6001" desc="drug target gene" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0057" desc="genetic,suppression expression alteration" weight="null" type="E" visible="true" species="rsion=" color="123,109,238"/>
+    <method name="M0056" desc="genetic,suppression mutation" weight="null" type="E" visible="true" species="rsion=" color="0,51,153"/>
+    <method name="M0055" desc="genetic,synthetic growth effect" weight="null" type="E" visible="true" species="rsion=" color="144,176,17"/>
+    <method name="M0054" desc="genetic,conditional synthetic lethal" weight="null" type="E" visible="true" species="rsion=" color="242,103,26"/>
+    <method name="M7002" desc="PullDown" weight="null" type="null" visible="true" species="rsion=" color="70,121,87"/>
+    <method name="M0053" desc="filter binding" weight="null" type="E" visible="true" species="rsion=" color="255,0,204"/>
+    <method name="M7001" desc="Literature" weight="null" type="null" visible="true" species="rsion=" color="193,122,74"/>
+    <method name="M0052" desc="fluorescence technology" weight="0" type="E" visible="true" species="rsion=" color="0,153,153"/>
+    <method name="M0051" desc="elisa" weight="enzyme-linked immunosorbent assay" type="0" visible="true" species="rsion=" color="193,100,42"/>
+    <method name="M0050" desc="phage display" weight="0" type="E" visible="true" species="rsion=" color="166,195,96"/>
+    <method name="M9004" desc="Protein Inhibition" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M9003" desc="Protein Activation" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M9002" desc="Transcriptional Repression" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M9001" desc="Transcriptional Activation" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M0049" desc="surface plasmon resonance" weight="0" type="E" visible="true" species="rsion=" color="137,220,101"/>
+    <method name="M0048" desc="structure based prediction" weight="0" type="E" visible="true" species="rsion=" color="174,121,131"/>
+    <method name="M0047" desc="genetic,synthetic lethality" weight="0" type="E" visible="true" species="rsion=" color="91,167,147"/>
+    <method name="M0046" desc="Bayesian Predicted Interaction" weight="0" type="C" visible="true" species="rsion=" color="162,230,60"/>
+    <method name="M0045" desc="affinity technology" weight="0" type="E" visible="true" species="rsion=" color="139,169,9"/>
+    <method name="M0044" desc="Affinity Precipitation" weight="0" type="E" visible="true" species="rsion=" color="8,130,224"/>
+    <method name="M0043" desc="Screened ChromoImmunoPrecipitation" weight="null" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M0042" desc="Chromatin Immunoprecipitation (ChIP)" weight="0" type="E" visible="true" species="rsion=" color="100,14,33"/>
+    <method name="M0041" desc="Transcription Factor" weight="0" type="E" visible="true" species="rsion=" color="22,214,233"/>
+    <method name="M0040" desc="Screened two hybrid test" weight="null" type="E" visible="true" species="rsion=" color="232,14,133"/>
+    <method name="M9999" desc="KEGG Pathway" weight="100" type="E" visible="true" species="rsion=" color="250,51,131"/>
+    <method name="M0039" desc="transient coexpression" weight="0" type="E" visible="true" species="rsion=" color="34,255,209"/>
+    <method name="M0038" desc="gene neighbourhoods" weight="0" type="C" visible="true" species="rsion=" color="205,95,245"/>
+    <method name="M0037" desc="phylogenetic profile" weight="0" type="C" visible="true" species="rsion=" color="6,185,76"/>
+    <method name="M0036" desc="domain fusion" weight="0" type="C" visible="true" species="rsion=" color="205,95,138"/>
+    <method name="M0035" desc="X-ray" weight="null" type="E" visible="true" species="rsion=" color="125,93,66"/>
+    <method name="M0099" desc="unknown" weight="0" type="E" visible="true" species="rsion=" color="0,0,0"/>
+    <method name="M0034" desc="two hybrid test" weight="0" type="E" visible="true" species="rsion=" color="0,0,255"/>
+    <method name="M0098" desc="electrophoretic mobility shift assay" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0033" desc="cosedimentation" weight="0" type="E" visible="true" species="rsion=" color="125,93,66"/>
+    <method name="M0032" desc="Sizing Column" weight="null" type="E" visible="true" species="rsion=" color="25,110,6"/>
+    <method name="M0097" desc="comigration in non denaturing gel electrophoresis" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0096" desc="blue native page" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0031" desc="Other Biophysical" weight="0" type="E" visible="true" species="rsion=" color="125,93,255"/>
+    <method name="M0095" desc="protein kinase assay" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0030" desc="other genetic" weight="0" type="E" visible="true" species="rsion=" color="125,182,97"/>
+    <method name="M0094" desc="confocal microscopy" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0093" desc="inferred by curator" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0092" desc="peptide array" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0091" desc="inferred by author" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0090" desc="dihydrofolate reductase reconstruction" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0029" desc="monoclonal antibody" weight="null" type="E" visible="true" species="rsion=" color="0,182,212"/>
+    <method name="M0028" desc="mass spectrometry studies of complexes" weight="0" type="E" visible="true" species="rsion=" color="255,182,212"/>
+    <method name="M0027" desc="Interaction adhesion assay " weight="null" type="E" visible="true" species="rsion=" color="255,0,212"/>
+    <method name="M0026" desc="In vitro binding" weight="0" type="E" visible="true" species="rsion=" color="255,0,90"/>
+    <method name="M0025" desc="colocalization by immunostaining" weight="0" type="E" visible="true" species="rsion=" color="255,165,0"/>
+    <method name="M0024" desc="Immunoprecipitation" weight="null" type="E" visible="true" species="rsion=" color="105,67,159"/>
+    <method name="M0089" desc="anti bait coimmunoprecipitation" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0088" desc="tandem affinity purification" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0087" desc="Functional Linkage Network" weight="null" type="C" visible="true" color="204,204,225"/>
+    <method name="M0021" desc="western blot" weight="null" type="E" visible="true" species="rsion=" color="129,94,42"/>
+    <method name="M0086" desc="Synthetic Haploinsufficiency" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0020" desc="genetic,tetrad analysis" weight="0" type="E" visible="true" species="rsion=" color="204,113,0"/>
+    <method name="M0085" desc="chromatography technology" weight="null" type="E" visible="true" color="232,14,133"/>
+    <method name="M0084" desc="Invitro" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0083" desc="Biochemical Activity" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0082" desc="Dosage Growth Defect" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0081" desc="Synthetic Rescue" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0080" desc="Phenotypic Suppression" weight="null" type="E" visible="true" color="0,0,0"/>
+    <method name="M0019" desc="Gel retardation assays " weight="0" type="E" visible="true" species="rsion=" color="158,240,27"/>
+    <method name="M0018" desc="molecular sieving" weight="0" type="E" visible="true" species="rsion=" color="142,146,215"/>
+</DefaultMethods>
