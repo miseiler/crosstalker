@@ -9,13 +9,13 @@ COMPARISON_SUFFIX    = 'final'
 
 # XXX requires pathway definitions
 
-def difftree(pathway_dict, test_cond_name, normal_cond_name, infile_suffix=NO_COMPARISON_SUFFIX):            
+def difftree(pathway_dict, test_cond_name, control_cond_name, infile_suffix=NO_COMPARISON_SUFFIX):            
     # To be performed on freshly created scripts.create_visml_from_sdata(%s_sig_connections.txt, dmatrix=True)
     
     A = VisML.VisMLTree('%s_%s.xml' % (test_cond_name, infile_suffix))
-    B = clustio.ParseNormal('sig_connections/%s_sig_connections_95.txt' % normal_cond_name)
+    B = clustio.ParseNormal('sig_connections/%s_sig_connections_95.txt' % control_cond_name)
     C = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % test_cond_name)
-    D = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % normal_cond_name)
+    D = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % control_cond_name)
     assert len(C) == len(D)
     for i, j in comb(xrange(len(C)), 2):
         vC = N.sqrt(C.M[i][j] * C.M[j][i])
@@ -28,7 +28,7 @@ def difftree(pathway_dict, test_cond_name, normal_cond_name, infile_suffix=NO_CO
     A.add_method('M7001', 'Deleted Link', 'C', color='lightblue')
     Anodes = A.nodes
     And = dict([ (x.name, x) for x in Anodes ])
-    comp = clustio.ParseNormal('auc_results/%s_vs_%s_thresh_95.txt' % (test_cond_name, normal_cond_name))
+    comp = clustio.ParseNormal('auc_results/%s_vs_%s_thresh_95.txt' % (test_cond_name, control_cond_name))
     nodenames = And.keys()
     for i, j in comb(xrange(len(nodenames)), 2):
         n1 = nodenames[i]
@@ -83,7 +83,7 @@ def prettify_tree(tree):
 
     return tree
 
-def create_tree(test_cond_name, normal_cond_name='Normal', pathway_dict, infile_suffix=NO_COMPARISON_SUFFIX, outfile_suffix=COMPARISON_SUFFIX):
+def create_tree(test_cond_name, control_cond_name, pathway_dict, infile_suffix=NO_COMPARISON_SUFFIX, outfile_suffix=COMPARISON_SUFFIX):
 
     print
     print('Creating VisML tree %s_%s.xml...' % (test_cond_name, infile_suffix))
@@ -92,5 +92,5 @@ def create_tree(test_cond_name, normal_cond_name='Normal', pathway_dict, infile_
     tree.write('%s_%s.xml' % (test_cond_name, infile_suffix))
 
     print('Creating VisML tree %s_%s.xml...' % (test_cond_name, outfile_suffix))
-    tree = difftree(pathway_dict, test_cond_name, normal_cond_name, infile_suffix=infile_suffix)
+    tree = difftree(pathway_dict, test_cond_name, control_cond_name, infile_suffix=infile_suffix)
     tree.write('%s_%s.xml' % (test_cond_name, outfile_suffix))

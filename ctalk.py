@@ -62,7 +62,7 @@ def calculate_sig_connections(fn):
             s.M[i][j] = s.M[j][i] = 0
     clustio.write_normal(s, 'sig_connections/%s_sig_connections_95.txt' % fn)
 
-def calculate_enhancement(fn1, fn2='Normal', pathway_dict, path_lengths):
+def calculate_enhancement(fn1, fn2, pathway_dict, path_lengths):
 
     # XXX Calculated threshold is more appropriate here to reduce time spent
     q1, q2 = auc_perm.permcomp(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0.0, iter=ITER_ENH)
@@ -127,7 +127,8 @@ def handle_opts():
             usage('Option not recognized: %s' % o)
 
     if None in settings.values():
-        print('Missing data: ' % ' '.join([ x for x in settings if settings[x] is None ]))
+        usage()
+        print('Missing data: %s' % ' '.join([ x for x in settings if settings[x] is None ]))
         sys.exit(1)
 
     return settings
@@ -191,7 +192,7 @@ def generate_missing(settings):
         else:
             print('Found significant connection matrix')
 
-    if not os.path.exists('auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2):
+    if not os.path.exists('auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2)):
         print('Enhancement permutation test results not found, building...')
         calculate_enhancement(fn1, fn2, pathway_dict, path_lengths)
     else:
