@@ -9,12 +9,15 @@ Crosstalker v 0.1
 Crosstalker is designed as a simple implementation of the workflow described in
 M Seiler, F Tian, Y Liu, Z Hu. Subtype-specific pathway crosstalk in breast cancer. 2014. Submitted.
 
-It is linux command line based, and requires only Python 2.7 and a recent version of Numpy (>= 1.1.0). It is distributed
+It is linux command line based, and requires only Python 2.7 and a recent version of Numpy (>= 1.1.0) to run. It is distributed
 with a complete implementation of PyVisML (https://code.google.com/p/pyvisml/) and CROC (http://swami.wustl.edu/CROC/), as
 well as a partial implementation of ConsensusCluster (https://code.google.com/p/consensus-cluster/).
 
 PyVisML and ConsensusCluster are copyright 2009 and 2013 Michael Seiler
 CROC is copyright 2014 S. Joshua Swamidass
+
+The output of this program is a VisML XML file suitable for visualization using the VisANT network-visualization and analysis
+platform.
 
 INSTALLATION
 ------------
@@ -39,3 +42,9 @@ https://dl.dropboxusercontent.com/u/467624/hsa_paths.gz
 https://dl.dropboxusercontent.com/u/467624/FLN_hsa.txt.gz
 
 Both should be ungzipped before using.
+
+RESULTS
+-------
+
+This program outputs a pathway-pathway crosstalk network suitable for use with the VisANT software platform (visant.bu.edu). A
+recent version of VisANT (4.3 or later) is required to view the network properly.
