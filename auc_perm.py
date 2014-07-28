@@ -7,6 +7,7 @@ from itertools import combinations as comb
 from itertools import combinations_with_replacement as combr
 
 from auc import roc, mutual, auc
+from ctalk import get_sa
 
 MP_MAX_QUEUE = 8
 
@@ -30,18 +31,25 @@ def findpathwaysizes(fn1, fn2, pathway_dict, sizes, threshold):
     #return list(set([ tuple(x) for x in res if (N.array(x) > 16).all() and (N.array(x) < 350).all() ]))
     return list(set([ tuple(x) for x in res ]))
 
-def permcomp(fn1, fn2, fln, pathway_dict, sizes, threshold=0.0, procs=mp.cpu_count(), iter=100):
-    sa1 = clustio.read_table('gene_presence/%s_top85_gt_1.txt' % fn1)
-    sa2 = clustio.read_table('gene_presence/%s_top85_gt_1.txt' % fn2)
+def permcomp_by_size(fn1, fn2, fln, p1size, p2size, iter=1000):
+    sa1 = get_sa(fn1)
+    sa2 = get_sa(fn2)
     assert set(sa1.keys()) == set(sa2.keys())
-    for k in sa1:
-        sa1[k] = int(sa1[k])
-        sa2[k] = int(sa2[k])
+    results = []
+    seedmat = N.random.rand(2, 2)
+    Q1 = mp_auc_matrix(fln, [p1size, p2size], sa1, similarity=True, seedmat = seedmat, iter=iter)
+    Q2 = mp_auc_matrix(fln, [p1size, p2size], sa2, similarity=True, seedmat = seedmat, iter=iter)
+    return Q1, Q2
+
+def permcomp(fn1, fn2, fln, pathway_dict, sizes, threshold=0.0, procs=mp.cpu_count(), iter=100):
+    sa1 = get_sa(fn1)
+    sa2 = get_sa(fn2)
+    assert set(sa1.keys()) == set(sa2.keys())
     pairs = findpathwaysizes(fn1, fn2, pathway_dict, sizes, threshold)
     print('Calculating permutations for %s/%s possible pairs' % (len(pairs), (len(sizes) * (len(sizes) + 1)) / 2))
     seedmat = N.random.rand(len(sizes), len(sizes))
-    Q1 = auc_perm.mp_auc_matrix(fln, sizes, sa1, similarity=True, seedmat=seedmat, procs=procs, pairs=pairs, iter=iter)
-    Q2 = auc_perm.mp_auc_matrix(fln, sizes, sa2, similarity=True, seedmat=seedmat, procs=procs, pairs=pairs, iter=iter)
+    Q1 = mp_auc_matrix(fln, sizes, sa1, similarity=True, seedmat=seedmat, procs=procs, pairs=pairs, iter=iter)
+    Q2 = mp_auc_matrix(fln, sizes, sa2, similarity=True, seedmat=seedmat, procs=procs, pairs=pairs, iter=iter)
     return Q1, Q2
 
 def predictability_perm_roc(s, size1, size2, sa, iter, similarity, seed):

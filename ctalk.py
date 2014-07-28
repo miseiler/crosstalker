@@ -10,6 +10,7 @@ from itertools import combinations as comb
 
 ITER_ENH  = 100  # Number of permutations to run for enhancement calculation. Note that higher numbers will vastly increase processing time.
 ITER_PERM = 1000 # Number of 4/500 permutations to run for significance calculation
+ITER_ENH_T= 1000 # Number of permutations to run to find a minimum threshold for calculating enhancement for that size pair
 
 
 def calculate_sa(s, fn):
@@ -62,10 +63,17 @@ def calculate_sig_connections(fn):
             s.M[i][j] = s.M[j][i] = 0
     clustio.write_normal(s, 'sig_connections/%s_sig_connections_95.txt' % fn)
 
-def calculate_enhancement(fn1, fn2, pathway_dict, path_lengths):
+def calculate_enhancement_threshold(fn1, fn2, fln, path_lengths):
 
-    # XXX Calculated threshold is more appropriate here to reduce time spent
-    q1, q2 = auc_perm.permcomp(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0.0, iter=ITER_ENH)
+    pl = sorted(path_lengths, reverse=True)
+    q1, q2 = auc_perm.permcomp_by_size(fn1, fn2, fln, pl[0], pl[1], iter=ITER_ENH_T)
+    r2 = N.abs(q1[0][1] - q2[0][1])
+    r2.sort()
+    return r2[int(0.95 * ITER_ENH_T)]
+
+def calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0.0):
+
+    q1, q2 = auc_perm.permcomp(fn1, fn2, fln, pathway_dict, path_lengths, threshold=threshold, iter=ITER_ENH)
     M = N.abs(q1 - q2)
     c = clustio.parsers.NullParser()
     c.gene_names = N.array([ str(x) for x in lens ])
@@ -207,8 +215,11 @@ def generate_missing(settings):
             print('Found significant connection matrix')
 
     if not os.path.exists('auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2)):
-        print('Enhancement permutation test results not found, building...')
-        calculate_enhancement(fn1, fn2, pathway_dict, path_lengths)
+        print('Enhancement permutation test results not found')
+        print('Calculating an appropriate threshold to reduce permutation search space...')
+        threshold = calculate_enhancement_threshold(fn1, fn2, fln, path_lengths)
+        print('Building enhancement permutation test matrix...')
+        calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=threshold)
     else:
         print('Found enhancement permutation test results')
 
