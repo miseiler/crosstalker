@@ -145,7 +145,7 @@ def auc(roc, sweep_method='smooth'):
 
 def _pr(q, rq, ns, num, sa):
 
-    print('Worker started')
+    #print('Worker started')
 
     res = []
 
@@ -153,7 +153,7 @@ def _pr(q, rq, ns, num, sa):
         
         v = q.get()
         if v is None:
-            print('Worker received termination request! Stopping...')
+            #print('Worker received termination request! Stopping...')
             break
 
         i, j = v
@@ -171,7 +171,7 @@ def _pr(q, rq, ns, num, sa):
     #print('Worker %s writing to file...' % num)
     #clustio.write_list(['\t'.join([str(elem) for elem in x]) for x in res], 'results_%s.txt' % num)
     
-    print('Queuing result (%s)' % num)
+    #print('Queuing result (%s)' % num)
     rq.put(res)
 
 def mp_auc_matrix(s, pathways, sa, similarity=False, procs=mp.cpu_count()):

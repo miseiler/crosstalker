@@ -30,20 +30,17 @@ from itertools import combinations as comb
 from itertools import combinations_with_replacement as combr
 
 from auc import roc, mutual, auc
-from ctalk import get_sa
+from ctalk import get_sa, mutualize
 
-MP_MAX_QUEUE = 8
+MP_MAX_QUEUE = 16
 
 
 def findpathwaysizes(fn1, fn2, pathway_dict, sizes, threshold):
     mat1 = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn1)
     mat2 = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn2)
     assert (mat1.gene_names == mat2.gene_names).all()
-    for i, j in comb(xrange(len(mat1)), 2):
-        v1 = N.sqrt(mat1.M[i][j] * mat1.M[j][i])
-        v2 = N.sqrt(mat2.M[i][j] * mat2.M[j][i])
-        mat1.M[i][j] = mat1.M[j][i] = v1
-        mat2.M[i][j] = mat2.M[j][i] = v2
+    mutualize(mat1)
+    mutualize(mat2)
     M = N.abs(mat1.M - mat2.M)
     res = []
     nd = {}
@@ -132,7 +129,7 @@ def predictability_perm_roc(s, size1, size2, sa, iter, similarity, seed):
 
 def _pr(q, rq, ns, num, sa):
 
-    print('Worker started')
+    #print('Worker started')
 
     res = []
 
@@ -140,7 +137,7 @@ def _pr(q, rq, ns, num, sa):
         
         v = q.get()
         if v is None:
-            print('Worker received termination request! Stopping...')
+            #print('Worker received termination request! Stopping...')
             break
 
         i, j = v
@@ -160,7 +157,7 @@ def _pr(q, rq, ns, num, sa):
     #print('Worker %s writing to file...' % num)
     #clustio.write_list(['\t'.join([str(elem) for elem in x]) for x in res], 'results_%s.txt' % num)
     
-    print('Queuing result (%s)' % num)
+    #print('Queuing result (%s)' % num)
     rq.put(res)
 
 def mp_auc_matrix(s, pathwaysizes, sa, similarity=False, iter=1000, procs=mp.cpu_count(), seedmat=None, pairs=None):

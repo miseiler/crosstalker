@@ -32,35 +32,12 @@ from itertools import combinations as comb
 
 
 ITER_ENH  = 100  # Number of permutations to run for enhancement calculation. Note that higher numbers will vastly increase processing time.
-ITER_PERM = 1000 # Number of 4/500 permutations to run for significance calculation
+ITER_PERM = 1000 # Number of permutations to run for significance calculation
 ITER_ENH_T= 1000 # Number of permutations to run to find a minimum threshold for calculating enhancement for that size pair
 
 
-def calculate_sa(s, fn):
-
-    M = (s.M >= 1.0).sum(0)
-    thresh = len(s) * 0.85
-    nd = dict([ (s.gene_names[i], int(M[i] >= thresh)) for i in xrange(len(s.gene_names)) ])
-    clustio.write_table(nd, 'gene_presence/%s_top85_gt_1.txt' % fn)
-
-def get_sa(fn):
-
-    sa = clustio.read_table('gene_presence/%s_top85_gt_1.txt' % fn)                
-    for x in sa:                    
-        sa[x] = int(sa[x])                          
-    return sa
-
-def calculate_auc(fn, fln, pathway_dict, path_names):
-
-    sa = get_sa(fn)
-    c = clustio.parsers.NullParser()                                             
-    c.gene_names = N.array(path_names)       
-    c.samples = [ clustio.parsers.SampleData(sample_id=x) for x in c.gene_names ] 
-    Q = auc.mp_auc_matrix(fln, [ pathway_dict[x] for x in path_names ], sa, similarity=True)           
-    c.M = Q        
-    clustio.write_normal(c, 'auc_results/%s_results_reweight_RAW.txt' % fn)
-
-def calculate_perm_test(fn, fln):
+def _calculate_perm_test(fn, fln):
+    # OLD METHOD, SUPERCEDED ON JULY 29 2014
 
     # TODO Hide output
     
@@ -73,7 +50,8 @@ def calculate_perm_test(fn, fln):
         results.append(N.sqrt(Q[0][1] * Q[1][0]))                
     clustio.write_list(results, 'auc_results/%s_perm_test_4_500.txt' % fn)
 
-def calculate_sig_connections(fn):
+def _calculate_sig_connections(fn):
+    # OLD METHOD, SUPERCEDED ON JULY 29 2014
 
     s = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn)
     for i, j in comb(xrange(len(s)), 2):
@@ -85,6 +63,70 @@ def calculate_sig_connections(fn):
     for i, j in comb(xrange(len(s)), 2):
         if s.M[i][j] < t95:
             s.M[i][j] = s.M[j][i] = 0
+    clustio.write_normal(s, 'sig_connections/%s_sig_connections_95.txt' % fn)
+
+
+def get_sa(fn):
+
+    sa = clustio.read_table('gene_presence/%s_top85_gt_1.txt' % fn)                
+    for x in sa:                    
+        sa[x] = int(sa[x])                          
+    return sa
+
+def create_new_symm_dset(features):
+
+    c = clustio.parsers.NullParser()                                             
+    c.gene_names = N.array(features)       
+    c.samples = [ clustio.parsers.SampleData(sample_id=x) for x in c.gene_names ] 
+
+    return c
+
+def mutualize(s):
+
+    for i, j in comb(xrange(len(s)), 2):
+        v = N.sqrt(s.M[i][j] * s.M[j][i])
+        s.M[i][j] = s.M[j][i] = v
+
+def calculate_sa(s, fn):
+
+    M = (s.M >= 1.0).sum(0)
+    thresh = len(s) * 0.85
+    nd = dict([ (s.gene_names[i], int(M[i] >= thresh)) for i in xrange(len(s.gene_names)) ])
+    clustio.write_table(nd, 'gene_presence/%s_top85_gt_1.txt' % fn)
+
+def calculate_auc(fn, fln, pathway_dict, path_names):
+
+    sa = get_sa(fn)
+    c = create_new_symm_dset(path_names)
+    Q = auc.mp_auc_matrix(fln, [ pathway_dict[x] for x in path_names ], sa, similarity=True)           
+    c.M = Q        
+    clustio.write_normal(c, 'auc_results/%s_results_reweight_RAW.txt' % fn)
+
+def calculate_perm_test(fn, fln, path_lengths):
+
+    sa = get_sa(fn)
+    M  = auc_perm.mp_auc_matrix(fln, path_lengths, sa, similarity=True, iter=ITER_PERM)
+    M.sort(2)
+    c = create_new_symm_dset(path_lengths)
+    c.M = M[:,:,int(0.95 * ITER_PERM)]
+    clustio.write_normal(c, 'auc_results/%s_perm_test.txt' % fn)
+
+def calculate_sig_connections(fn, pathway_dict):
+
+    s = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn)
+    mutualize(s)
+    c = clustio.ParseNormal('auc_results/%s_perm_test.txt' % fn)
+    
+    psizes = dict([ (x, len(pathway_dict[x])) for x in pathway_dict ])
+    cidx   = dict([ (int(i), c.gene_names[i]) for i in xrange(len(c.gene_names)) ])
+
+    for i, j in comb(xrange(len(s)), 2):
+        ilen = psizes[s.gene_names[i]]
+        jlen = psizes[s.gene_names[j]]
+        thresh = c.M[cidx[ilen]][cidx[jlen]]
+        if s.M[i][j] < thresh:
+            s.M[i][j] = s.M[j][i] = 0
+
     clustio.write_normal(s, 'sig_connections/%s_sig_connections_95.txt' % fn)
 
 def calculate_enhancement_threshold(fn1, fn2, fln, path_lengths):
@@ -99,9 +141,7 @@ def calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0
 
     q1, q2 = auc_perm.permcomp(fn1, fn2, fln, pathway_dict, path_lengths, threshold=threshold, iter=ITER_ENH)
     M = N.abs(q1 - q2)
-    c = clustio.parsers.NullParser()
-    c.gene_names = N.array([ str(x) for x in path_lengths ])
-    c.samples = [ clustio.parsers.SampleData(sample_id=x) for x in c.gene_names ]
+    c = create_new_symm_dset(path_lengths)
     M.sort(2)
     c.M = M[:,:,int(0.95 * ITER_ENH)]
     clustio.write_normal(c, 'auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2))
@@ -228,13 +268,13 @@ def generate_missing(settings):
 
         if not os.path.exists('auc_results/%s_perm_test_4_500.txt' % fn):
             print('Permutation test results not found, building...')
-            calculate_perm_test(fn, fln)
+            calculate_perm_test(fn, fln, path_lengths)
         else:
             print('Found permutation test results')
     
         if not os.path.exists('sig_connections/%s_sig_connections_95.txt' % fn):
             print('Significant connection matrix not found, building...')
-            calculate_sig_connections(fn)
+            calculate_sig_connections(fn, pathway_dict)
         else:
             print('Found significant connection matrix')
 
