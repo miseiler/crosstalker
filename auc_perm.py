@@ -38,6 +38,7 @@ MP_MAX_QUEUE = 8
 def findpathwaysizes(fn1, fn2, pathway_dict, sizes, threshold):
     mat1 = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn1)
     mat2 = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn2)
+    assert (mat1.gene_names == mat2.gene_names).all()
     for i, j in comb(xrange(len(mat1)), 2):
         v1 = N.sqrt(mat1.M[i][j] * mat1.M[j][i])
         v2 = N.sqrt(mat2.M[i][j] * mat2.M[j][i])

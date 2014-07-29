@@ -38,8 +38,9 @@ ITER_ENH_T= 1000 # Number of permutations to run to find a minimum threshold for
 
 def calculate_sa(s, fn):
 
+    M = (s.M >= 1.0).sum(0)
     thresh = len(s) * 0.85
-    nd = dict([ (s.gene_names[i], int(s.M.sum(0)[i] >= thresh)) for i in xrange(len(s.gene_names)) ])
+    nd = dict([ (s.gene_names[i], int(M[i] >= thresh)) for i in xrange(len(s.gene_names)) ])
     clustio.write_table(nd, 'gene_presence/%s_top85_gt_1.txt' % fn)
 
 def get_sa(fn):
@@ -179,24 +180,24 @@ def generate_missing(settings):
     f.close()
     
     print('Found %s pathways' % len(pathway_dict))
-    path_names   = list(set(pathway_dict.keys()))
+    path_names   = sorted(pathway_dict.keys())
 
     print('Generating pathway length list...')
-    path_lengths = list(set([ len(pathway_dict[x]) for x in pathway_dict ])) 
+    path_lengths = sorted(set([ len(pathway_dict[x]) for x in pathway_dict ])) 
 
     fn1 = os.path.splitext(os.path.basename(settings['test']))[0]
     fn2 = os.path.splitext(os.path.basename(settings['control']))[0]
 
     # Final things needed are reweight_RAW, sig_connections, test_vs_control_thresh_95.txt
     # Steps:
-    # calculate_sa creates gene_presence/%s_top85_gt_1.txt
-    # * calculate_auc creates auc_results/%s_results_reweight_RAW.txt
-    # * calculate_perm_test creates auc_results/%s_perm_test_4_500.txt
+    # @ calculate_sa creates gene_presence/%s_top85_gt_1.txt
+    # @ * calculate_auc creates auc_results/%s_results_reweight_RAW.txt
+    # @ * calculate_perm_test creates auc_results/%s_perm_test_4_500.txt
     # @ calculate_sig_connections creates sig_connections/%s_sig_connections_95.txt
     # calculate_enhancement creates auc_results/%s_vs_%s_thresh_95.txt
     
     # * denotes activities that can occur simultaneously
-    # @ denotes I have tested this to make sure it works
+    # @ denotes I have tested this to make sure it works in a manner consistent to earlier code
 
     for fn, datafile in [(fn1, settings['test']), (fn2, settings['control'])]:
         print
