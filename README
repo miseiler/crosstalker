@@ -7,7 +7,7 @@ miseiler@gmail.com
 Crosstalker v 0.1
 
 Crosstalker is designed as a simple implementation of the workflow described in
-M Seiler, F Tian, Y Liu, Z Hu. Subtype-specific pathway crosstalk in breast cancer. 2014. Submitted.
+M Seiler, F Tian, Y Liu, Z Hu. Subtype-specific pathway crosstalk in breast cancer. 2014.
 
 It is linux command line based, and requires only Python 2.7 and a recent version of Numpy (>= 1.1.0) to run. It is distributed
 with a complete implementation of PyVisML (https://code.google.com/p/pyvisml/) and CROC (http://swami.wustl.edu/CROC/), as
