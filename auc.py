@@ -198,7 +198,7 @@ def mp_auc_matrix(s, pathways, sa, similarity=False, procs=mp.cpu_count()):
 
     # Start workers
 
-    print('Worker count: %s' % procs)
+    #print('Worker count: %s' % procs)
     workers = {}
     for i in xrange(procs):
         workers[i] = mp.Process(target=_pr, args=(q, rq, ns, i, sa))

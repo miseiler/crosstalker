@@ -316,7 +316,7 @@ if __name__ == '__main__':
 
     """
 
-    # TODO: AUC and perm test can be done simultaneously
+    # TODO: By sharing a seed matrix, we can do just one permutation test for both enh and AUC threshold
 
     settings = handle_opts()
     dirstruct()
