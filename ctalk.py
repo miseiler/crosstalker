@@ -99,7 +99,7 @@ def calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0
     q1, q2 = auc_perm.permcomp(fn1, fn2, fln, pathway_dict, path_lengths, threshold=threshold, iter=ITER_ENH)
     M = N.abs(q1 - q2)
     c = clustio.parsers.NullParser()
-    c.gene_names = N.array([ str(x) for x in lens ])
+    c.gene_names = N.array([ str(x) for x in path_lengths ])
     c.samples = [ clustio.parsers.SampleData(sample_id=x) for x in c.gene_names ]
     M.sort(2)
     c.M = M[:,:,int(0.95 * ITER_ENH)]
