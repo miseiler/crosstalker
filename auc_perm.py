@@ -141,8 +141,8 @@ def _pr(q, rq, ns, num, sa):
             break
 
         i, j = v
-        if i % 100 == 0 and j == i+1:
-            print('Current job status: %s' % i)
+        #if i % 100 == 0 and j == i+1:
+        #    print('Current job status: %s' % i)
     
         psize1 = ns.pathwaysizes[i]
         psize2 = ns.pathwaysizes[j]

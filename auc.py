@@ -178,8 +178,8 @@ def _pr(q, rq, ns, num, sa):
             break
 
         i, j = v
-        if i % 100 == 0 and j == i+1:
-            print('Current job status: %s' % i)
+        #if i % 100 == 0 and j == i+1:
+        #    print('Current job status: %s' % i)
     
         p1 = ns.pathways[i]
         p2 = ns.pathways[j]
