@@ -21,12 +21,17 @@ along with Crosstalker.  If not, see <http://www.gnu.org/licenses/>.
 
 
 """
-import sys, croc
+
+# Jul 30 2014 deprecated CROC method
+# import croc
+import sys
 import clustio, scripts
 
 import numpy as N
 import multiprocessing as mp
 from itertools import combinations as comb
+
+from sklearn import metrics
 
 def roc(s, seed_list, target_list, sa):
 
@@ -79,9 +84,12 @@ def roc(s, seed_list, target_list, sa):
     weights = list(weights) + wadd
     q.gene_names = list(q.gene_names) + gadd
 
-    weights = [ (weights[i], q.gene_names[i] in gl2set) for i in xrange(len(weights)) ]
+    return weights, [ int(x in gl2set) for x in q.gene_names ]
 
-    return weights
+    # Jul 30 2014 return changed for new AUC method
+    #weights = [ (weights[i], q.gene_names[i] in gl2set) for i in xrange(len(weights)) ]
+
+    #return weights
 
 def predictability_roc(s, gl1, gl2, sa, similarity=False):
     """
@@ -134,14 +142,27 @@ def mutual(roc1, roc2):
 
     return N.sqrt(auc(roc1) * auc(roc2))
 
-def auc(roc, sweep_method='smooth'):
+def _auc(roc, sweep_method='smooth'):
     """
 
     Calculate the area under the curve using the CROC library
+    Superceded Jul 30 2014
 
     """
     
     return croc.ROC(croc.ScoredData(roc).sweep_threshold(sweep_method)).area()
+
+def auc(roc):
+    """
+
+    Calculate the area under the curve using scikits-learn
+
+    """
+
+    weights, labels = roc
+
+    fpr, tpr, thresholds = metrics.roc_curve(labels, weights)
+    return metrics.auc(fpr, tpr, reorder=True)
 
 def _pr(q, rq, ns, num, sa):
 
