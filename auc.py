@@ -31,7 +31,47 @@ import numpy as N
 import multiprocessing as mp
 from itertools import combinations as comb
 
-from sklearn import metrics
+try:
+    from numpy import isclose
+except:
+    def isclose(a, b, rtol=1.e-5, atol=1.e-8, equal_nan=False):
+        """
+        Returns a boolean array where two arrays are element-wise equal within
+        a tolerance.
+    
+        This function was added to numpy v1.7.0, and the version you are
+        running has been backported from numpy v1.8.1. See its documentation
+        for more details.
+        """
+        def within_tol(x, y, atol, rtol):
+            with N.errstate(invalid='ignore'):
+                result = N.less_equal(abs(x-y), atol + rtol * abs(y))
+            if N.isscalar(a) and N.isscalar(b):
+                result = bool(result)
+            return result
+    
+        x = N.array(a, copy=False, subok=True, ndmin=1)
+        y = N.array(b, copy=False, subok=True, ndmin=1)
+        xfin = N.isfinite(x)
+        yfin = N.isfinite(y)
+        if all(xfin) and all(yfin):
+            return within_tol(x, y, atol, rtol)
+        else:
+            finite = xfin & yfin
+            cond = N.zeros_like(finite, subok=True)
+            # Since we're using boolean indexing, x & y must be the same shape.
+            # Ideally, we'd just do x, y = broadcast_arrays(x, y). It's in
+            # lib.stride_tricks, though, so we can't import it here.
+            x = x * N.ones_like(cond)
+            y = y * N.ones_like(cond)
+            # Avoid subtraction with infinite/nan values...
+            cond[finite] = within_tol(x[finite], y[finite], atol, rtol)
+            # Check for equality of infinite values...
+            cond[~finite] = (x[~finite] == y[~finite])
+            if equal_nan:
+                # Make NaN == NaN
+                cond[N.isnan(x) & N.isnan(y)] = True
+            return cond
 
 def roc(s, seed_list, target_list, sa):
 
@@ -155,14 +195,34 @@ def _auc(roc, sweep_method='smooth'):
 def auc(roc):
     """
 
-    Calculate the area under the curve using scikits-learn
+    AUC score calculation adapted from the implementation in scikits-learn 0.16
 
     """
+    
+    y_score, y_true = roc
 
-    weights, labels = roc
+    # sort scores and corresponding truth values
+    desc_score_indices = N.argsort(y_score, kind="mergesort")[::-1]
+    y_score = y_score[desc_score_indices]
+    y_true = y_true[desc_score_indices]
 
-    fpr, tpr, thresholds = metrics.roc_curve(labels, weights)
-    return metrics.auc(fpr, tpr, reorder=True)
+    # y_score typically has many tied values. Here we extract
+    # the indices associated with the distinct values. We also
+    # concatenate a value for the end of the curve.
+    # We need to use isclose to avoid spurious repeated thresholds
+    # stemming from floating point roundoff errors.
+    distinct_value_indices = N.where(N.logical_not(isclose(
+        N.diff(y_score), 0)))[0]
+    threshold_idxs = N.r_[distinct_value_indices, y_true.size - 1]
+
+    # accumulate the true positives with decreasing threshold
+    tps = y_true.cumsum()[threshold_idxs]
+    fps = 1 + threshold_idxs - tps
+    
+    fpr = fps / float(fps[-1])
+    tpr = tps / float(tps[-1])
+    
+    return N.trapz(tpr, fpr)
 
 def _pr(q, rq, ns, num, sa):
 
