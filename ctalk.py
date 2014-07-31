@@ -232,9 +232,9 @@ def generate_missing(settings):
     # Steps:
     # @ calculate_sa creates gene_presence/%s_top85_gt_1.txt
     # @ * calculate_auc creates auc_results/%s_results_reweight_RAW.txt
-    # @ * calculate_perm_test creates auc_results/%s_perm_test_4_500.txt
+    # * calculate_perm_test creates auc_results/%s_perm_test.txt
     # @ calculate_sig_connections creates sig_connections/%s_sig_connections_95.txt
-    # calculate_enhancement creates auc_results/%s_vs_%s_thresh_95.txt
+    # @ calculate_enhancement creates auc_results/%s_vs_%s_thresh_95.txt
     
     # * denotes activities that can occur simultaneously
     # @ denotes I have tested this to make sure it works in a manner consistent to earlier code
@@ -253,6 +253,7 @@ def generate_missing(settings):
         if os.path.exists('auc_results/%s_results_reweight_RAW.txt' % fn):
             s = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn)
             if not s.sample_ids == path_names:
+                del s
                 print('New pathway definitions detected! Attempting to remove old results...')
                 for f in ('auc_results/%s_results_reweight_RAW.txt' % fn, 'auc_results/%s_perm_test_4_500.txt' % fn, 'sig_connections/%s_sig_connections_95.txt' % fn, 'auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2)):
                     try:
@@ -266,7 +267,7 @@ def generate_missing(settings):
         else:
             print('Found AUC results')
 
-        if not os.path.exists('auc_results/%s_perm_test_4_500.txt' % fn):
+        if not os.path.exists('auc_results/%s_perm_test.txt' % fn):
             print('Permutation test results not found, building...')
             calculate_perm_test(fn, fln, path_lengths)
         else:
