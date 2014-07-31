@@ -21,7 +21,7 @@ along with Crosstalker.  If not, see <http://www.gnu.org/licenses/>.
 
 
 """
-import sys, croc
+import sys
 import clustio, scripts
 
 import numpy as N
