@@ -75,6 +75,9 @@ def get_sa(fn):
 
 def create_new_symm_dset(features):
 
+    # Assert we can write these to row and column labels without join() complaining
+    features = [ str(x) for x in features ]
+
     c = clustio.parsers.NullParser()                                             
     c.gene_names = N.array(features)       
     c.samples = [ clustio.parsers.SampleData(sample_id=x) for x in c.gene_names ] 
