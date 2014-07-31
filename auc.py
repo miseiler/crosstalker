@@ -124,7 +124,7 @@ def roc(s, seed_list, target_list, sa):
     weights = list(weights) + wadd
     q.gene_names = list(q.gene_names) + gadd
 
-    return weights, [ int(x in gl2set) for x in q.gene_names ]
+    return N.array(weights), N.array([ int(x in gl2set) for x in q.gene_names ])
 
     # Jul 30 2014 return changed for new AUC method
     #weights = [ (weights[i], q.gene_names[i] in gl2set) for i in xrange(len(weights)) ]
@@ -203,8 +203,8 @@ def auc(roc):
 
     # sort scores and corresponding truth values
     desc_score_indices = N.argsort(y_score, kind="mergesort")[::-1]
-    y_score = y_score.take(desc_score_indices)
-    y_true = y_true.take(desc_score_indices)
+    y_score = y_score[desc_score_indices]
+    y_true = y_true[desc_score_indices]
 
     # y_score typically has many tied values. Here we extract
     # the indices associated with the distinct values. We also
@@ -216,7 +216,7 @@ def auc(roc):
     threshold_idxs = N.r_[distinct_value_indices, y_true.size - 1]
 
     # accumulate the true positives with decreasing threshold
-    tps = y_true.cumsum().take(threshold_idxs)
+    tps = y_true.cumsum()[threshold_idxs]
     fps = 1 + threshold_idxs - tps
     
     fpr = fps / float(fps[-1])
