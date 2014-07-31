@@ -203,8 +203,8 @@ def auc(roc):
 
     # sort scores and corresponding truth values
     desc_score_indices = N.argsort(y_score, kind="mergesort")[::-1]
-    y_score = y_score[desc_score_indices]
-    y_true = y_true[desc_score_indices]
+    y_score = y_score.take(desc_score_indices)
+    y_true = y_true.take(desc_score_indices)
 
     # y_score typically has many tied values. Here we extract
     # the indices associated with the distinct values. We also
@@ -216,7 +216,7 @@ def auc(roc):
     threshold_idxs = N.r_[distinct_value_indices, y_true.size - 1]
 
     # accumulate the true positives with decreasing threshold
-    tps = y_true.cumsum()[threshold_idxs]
+    tps = y_true.cumsum().take(threshold_idxs)
     fps = 1 + threshold_idxs - tps
     
     fpr = fps / float(fps[-1])
