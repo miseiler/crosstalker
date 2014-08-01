@@ -121,7 +121,7 @@ def calculate_sig_connections(fn, pathway_dict):
     c = clustio.ParseNormal('auc_results/%s_perm_test.txt' % fn)
     
     psizes = dict([ (x, len(pathway_dict[x])) for x in pathway_dict ])
-    cidx   = dict([ (int(i), c.gene_names[i]) for i in xrange(len(c.gene_names)) ])
+    cidx   = dict([ (int(c.gene_names[i]), i) for i in xrange(len(c.gene_names)) ])
 
     for i, j in comb(xrange(len(s)), 2):
         ilen = psizes[s.gene_names[i]]
