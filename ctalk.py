@@ -32,7 +32,7 @@ from itertools import combinations as comb
 
 
 ITER_ENH  = 100  # Number of permutations to run for enhancement calculation. Note that higher numbers will vastly increase processing time.
-ITER_PERM = 100  # Number of permutations to run for significance calculation
+ITER_PERM = 1000 # Number of permutations to run for significance calculation
 ITER_ENH_T= 1000 # Number of permutations to run to find a minimum threshold for calculating enhancement for that size pair
 
 
@@ -111,7 +111,7 @@ def calculate_perm_test(fn, fln, path_lengths):
     M  = auc_perm.mp_auc_matrix(fln, path_lengths, sa, similarity=True, iter=ITER_PERM)
     M.sort(2)
     c = create_new_symm_dset(path_lengths)
-    c.M = M[:,:,int(0.95 * ITER_PERM)]
+    c.M = M[:,:,int(0.999 * ITER_PERM)]
     clustio.write_normal(c, 'auc_results/%s_perm_test.txt' % fn)
 
 def calculate_sig_connections(fn, pathway_dict):
@@ -127,7 +127,7 @@ def calculate_sig_connections(fn, pathway_dict):
         ilen = psizes[s.gene_names[i]]
         jlen = psizes[s.gene_names[j]]
         thresh = c.M[cidx[ilen]][cidx[jlen]]
-        if s.M[i][j] < thresh:
+        if s.M[i][j] <= thresh:
             s.M[i][j] = s.M[j][i] = 0
 
     clustio.write_normal(s, 'sig_connections/%s_sig_connections_95.txt' % fn)
