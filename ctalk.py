@@ -32,7 +32,7 @@ from itertools import combinations as comb
 
 
 ITER_ENH  = 100  # Number of permutations to run for enhancement calculation. Note that higher numbers will vastly increase processing time.
-ITER_PERM = 1000 # Number of permutations to run for significance calculation
+ITER_PERM = 500  # Number of permutations to run for significance calculation
 ITER_ENH_T= 1000 # Number of permutations to run to find a minimum threshold for calculating enhancement for that size pair
 
 
