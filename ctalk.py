@@ -63,7 +63,7 @@ def _calculate_sig_connections(fn):
     for i, j in comb(xrange(len(s)), 2):
         if s.M[i][j] < t95:
             s.M[i][j] = s.M[j][i] = 0
-    clustio.write_normal(s, 'sig_connections/%s_sig_connections_95.txt' % fn)
+    clustio.write_normal(s, 'sig_connections/%s_sig_connections_999.txt' % fn)
 
 
 def get_sa(fn):
@@ -90,6 +90,17 @@ def mutualize(s):
         v = N.sqrt(s.M[i][j] * s.M[j][i])
         s.M[i][j] = s.M[j][i] = v
 
+def calculate_overlaps(pathway_dict):
+
+    overlaps = []
+    pathways = pathway_dict.keys()
+
+    for i, j in comb(xrange(len(pathways)), 2):
+        pi, pj = set(pathway_dict[pathways[i]]), set(pathway_dict[pathways[j]])
+        overlaps.append((len(pi), len(pj), len(pi & pj)))
+
+    return list(set(overlaps))
+
 def calculate_sa(s, fn):
 
     M = (s.M >= 1.0).sum(0)
@@ -105,7 +116,8 @@ def calculate_auc(fn, fln, pathway_dict, path_names):
     c.M = Q        
     clustio.write_normal(c, 'auc_results/%s_results_reweight_RAW.txt' % fn)
 
-def calculate_perm_test(fn, fln, path_lengths):
+# Dec 30 2014 Deprecated while perm tests are being tweaked
+def _calculate_perm_test(fn, fln, path_lengths):
 
     sa = get_sa(fn)
     M  = auc_perm.mp_auc_matrix(fln, path_lengths, sa, similarity=True, iter=ITER_PERM)
@@ -114,7 +126,18 @@ def calculate_perm_test(fn, fln, path_lengths):
     c.M = M[:,:,int(0.999 * ITER_PERM)]
     clustio.write_normal(c, 'auc_results/%s_perm_test.txt' % fn)
 
-def calculate_sig_connections(fn, pathway_dict):
+def calculate_perm_test(fn, fln, path_lengths):
+
+    sa = get_sa(fn)
+    result_dict = auc_perm.mp_auc_matrix(fln, path_lengths, sa, similarity=True, iter=ITER_PERM)
+
+    nd = dict([ (k, sorted(result_dict[k])[int(0.999 * ITER_PERM)]) for k in result_dict ])
+    f  = open('auc_results/%s_perm_test.txt' % fn, 'w')
+    cp.dump(nd, f)
+    f.close()
+
+# Dec 30 2014 Deprecated while perm tests are being tweaked
+def _calculate_sig_connections(fn, pathway_dict):
 
     s = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn)
     mutualize(s)
@@ -130,9 +153,28 @@ def calculate_sig_connections(fn, pathway_dict):
         if s.M[i][j] <= thresh:
             s.M[i][j] = s.M[j][i] = 0
 
-    clustio.write_normal(s, 'sig_connections/%s_sig_connections_95.txt' % fn)
+    clustio.write_normal(s, 'sig_connections/%s_sig_connections_999.txt' % fn)
 
-def calculate_enhancement_threshold(fn1, fn2, fln, path_lengths):
+def calculate_sig_connections(fn, pathway_dict):
+
+    s = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % fn)
+    mutualize(s)
+    
+    f  = open('auc_results/%s_perm_test.txt' % fn)
+    pt = cp.load(f)
+    f.close()
+
+    for i, j in comb(xrange(len(s)), 2):
+        p1 = set(pathway_dict[s.gene_names[i]])
+        p2 = set(pathway_dict[s.gene_names[j]])
+        thresh = pt[(len(p1), len(p2), len(p1 & p2))]
+        if s.M[i][j] <= thresh:
+            s.M[i][j] = s.M[j][i] = 0
+
+    clustio.write_normal(s, 'sig_connections/%s_sig_connections_999.txt' % fn)
+
+# Dec 29 2014 Deprecated while perm tests are being tweaked
+def _calculate_enhancement_threshold(fn1, fn2, fln, path_lengths):
 
     pl = sorted(path_lengths, reverse=True)
     q1, q2 = auc_perm.permcomp_by_size(fn1, fn2, fln, pl[0], pl[1], iter=ITER_ENH_T)
@@ -140,7 +182,13 @@ def calculate_enhancement_threshold(fn1, fn2, fln, path_lengths):
     r2.sort()
     return r2[int(0.95 * ITER_ENH_T)]
 
-def calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0.0):
+def calculate_enhancement_threshold(fn1, fn2, fln, path_lengths):
+    # Placeholder
+
+    return 0.0
+
+# Dec 29 2014 Deprecated while perm tests are being tweaked
+def _calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0.0):
 
     q1, q2 = auc_perm.permcomp(fn1, fn2, fln, pathway_dict, path_lengths, threshold=threshold, iter=ITER_ENH)
     M = N.abs(q1 - q2)
@@ -149,6 +197,18 @@ def calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0
     c.M = M[:,:,int(0.95 * ITER_ENH)]
     clustio.write_normal(c, 'auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2))
     clustio.write_normal(c, 'auc_results/%s_vs_%s_thresh_95.txt' % (fn2, fn1))
+
+def calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0.0):
+
+    result1, result2 = auc_perm.permcomp(fn1, fn2, fln, pathway_dict, path_lengths, threshold=threshold, iter=ITER_ENH)
+    
+    nd = dict([ (k, abs(sorted(result1[k])[int(0.95 * ITER_ENH)] - sorted(result2[k])[int(0.95 * ITER_ENH)])) for k in result1 ])
+    f  = open('auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2), 'w')
+    g  = open('auc_results/%s_vs_%s_thresh_95.txt' % (fn2, fn1), 'w')
+    cp.dump(nd, f)
+    cp.dump(nd, g)
+    f.close()
+    g.close()
 
 def dirstruct():
     """
@@ -225,8 +285,8 @@ def generate_missing(settings):
     print('Found %s pathways' % len(pathway_dict))
     path_names   = sorted(pathway_dict.keys())
 
-    print('Generating pathway length list...')
-    path_lengths = sorted(set([ len(pathway_dict[x]) for x in pathway_dict ])) 
+    print('Generating pathway length and overlap list...')
+    path_lengths = sorted(calculate_overlaps(pathway_dict))
 
     fn1 = os.path.splitext(os.path.basename(settings['test']))[0]
     fn2 = os.path.splitext(os.path.basename(settings['control']))[0]
@@ -236,7 +296,7 @@ def generate_missing(settings):
     # @ calculate_sa creates gene_presence/%s_top85_gt_1.txt
     # @ * calculate_auc creates auc_results/%s_results_reweight_RAW.txt
     # * calculate_perm_test creates auc_results/%s_perm_test.txt
-    # @ calculate_sig_connections creates sig_connections/%s_sig_connections_95.txt
+    # @ calculate_sig_connections creates sig_connections/%s_sig_connections_999.txt
     # @ calculate_enhancement creates auc_results/%s_vs_%s_thresh_95.txt
     
     # * denotes activities that can occur simultaneously
@@ -258,7 +318,7 @@ def generate_missing(settings):
             if not s.sample_ids == path_names:
                 del s
                 print('New pathway definitions detected! Attempting to remove old results...')
-                for f in ('auc_results/%s_results_reweight_RAW.txt' % fn, 'auc_results/%s_perm_test_4_500.txt' % fn, 'sig_connections/%s_sig_connections_95.txt' % fn, 'auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2)):
+                for f in ('auc_results/%s_results_reweight_RAW.txt' % fn, 'auc_results/%s_perm_test_4_500.txt' % fn, 'sig_connections/%s_sig_connections_999.txt' % fn, 'auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2)):
                     try:
                         os.remove(f)
                     except:
@@ -276,7 +336,7 @@ def generate_missing(settings):
         else:
             print('Found permutation test results')
     
-        if not os.path.exists('sig_connections/%s_sig_connections_95.txt' % fn):
+        if not os.path.exists('sig_connections/%s_sig_connections_999.txt' % fn):
             print('Significant connection matrix not found, building...')
             calculate_sig_connections(fn, pathway_dict)
         else:

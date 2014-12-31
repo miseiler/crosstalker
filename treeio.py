@@ -26,6 +26,7 @@ import clustio, scripts
 from itertools import combinations as comb
 
 import numpy as N
+import cPickle as cp
 
 NO_COMPARISON_SUFFIX = 'no_comparison'
 COMPARISON_SUFFIX    = 'final'
@@ -51,14 +52,18 @@ def difftree(pathway_dict, test_cond_name, control_cond_name, infile_suffix=NO_C
     A.add_method('M7001', 'Deleted Link', 'C', color='lightblue')
     Anodes = A.nodes
     And = dict([ (x.name, x) for x in Anodes ])
-    comp = clustio.ParseNormal('auc_results/%s_vs_%s_thresh_95.txt' % (test_cond_name, control_cond_name))
+
+    f = open('auc_results/%s_vs_%s_thresh_95.txt' % (test_cond_name, control_cond_name))
+    comp = cp.load(f)
+    f.close()
+
     nodenames = And.keys()
     for i, j in comb(xrange(len(nodenames)), 2):
         n1 = nodenames[i]
         n2 = nodenames[j]
-        ilen = len(pathway_dict[n1.lower()])
-        jlen = len(pathway_dict[n2.lower()])
-        thresh = comp.get_samples([str(ilen)]).get_features([str(jlen)]).M[0][0]
+        p1 = set(pathway_dict[n1.lower()])
+        p2 = set(pathway_dict[n2.lower()])
+        thresh = comp[(len(p1), len(p2), len(p1 & p2))]
         wB = B.get_samples([n1.lower()]).get_features([n2.lower()]).M[0][0]
         wA = 0.0
         if A.isconnected(n1, n2):

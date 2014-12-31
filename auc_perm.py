@@ -66,14 +66,17 @@ def permcomp(fn1, fn2, fln, pathway_dict, sizes, threshold=0.0, procs=mp.cpu_cou
     sa1 = get_sa(fn1)
     sa2 = get_sa(fn2)
     assert set(sa1.keys()) == set(sa2.keys())
-    pairs = findpathwaysizes(fn1, fn2, pathway_dict, sizes, threshold)
-    print('Calculating permutations for %s/%s possible pairs' % (len(pairs), (len(sizes) * (len(sizes) + 1)) / 2))
-    seedmat = N.random.rand(len(sizes), len(sizes))
-    Q1 = mp_auc_matrix(fln, sizes, sa1, similarity=True, seedmat=seedmat, procs=procs, pairs=pairs, iter=iter)
-    Q2 = mp_auc_matrix(fln, sizes, sa2, similarity=True, seedmat=seedmat, procs=procs, pairs=pairs, iter=iter)
-    return Q1, Q2
 
-def predictability_perm_roc(s, size1, size2, sa, iter, similarity, seed):
+    # Dec 30 2014 currently on hold while we work out how this is going to go
+    #pairs = findpathwaysizes(fn1, fn2, pathway_dict, sizes, threshold)
+    #print('Calculating permutations for %s/%s possible pairs' % (len(pairs), (len(sizes) * (len(sizes) + 1)) / 2))
+    
+    seedmat = N.random.rand(len(sizes))
+    result1 = mp_auc_matrix(fln, sizes, sa1, similarity=True, seedmat=seedmat, procs=procs, iter=iter)
+    result2 = mp_auc_matrix(fln, sizes, sa2, similarity=True, seedmat=seedmat, procs=procs, iter=iter)
+    return result1, result2
+
+def predictability_perm_roc(s, size1, size2, overlap, sa, iter, similarity, seed):
     """
     
     Calculate ROC of predictability for pathway sizes size1 and size2
@@ -113,13 +116,21 @@ def predictability_perm_roc(s, size1, size2, sa, iter, similarity, seed):
     res = []
     for _ in xrange(iter):
 
-        gl1 = sample(c.gene_names, size1)
-        gl2 = sample(c.gene_names, size2)
+        # Take a random sample without replacement of total necessary size
+        gene_pool = sample(c.gene_names, size1 + size2 - overlap)
+
+        # Find splits
+        div1 = size1 - overlap
+        div2 = size2 - overlap + div1
+
+        # Engineer two sets of size size1 and size2 with exactly overlap genes overlapping
+        gl1 = gene_pool[:div1]     + gene_pool[div2:]
+        gl2 = gene_pool[div1:div2] + gene_pool[div2:]
     
         #Sens = TP / (TP + FN)
         #Spec = FP / (TN + FP)
         #Plot sens vs 1 - spec
-    
+
         roc1 = roc(c, gl1, gl2, sa)
         roc2 = roc(c, gl2, gl1, sa)
 
@@ -140,19 +151,16 @@ def _pr(q, rq, ns, num, sa):
             #print('Worker received termination request! Stopping...')
             break
 
-        i, j = v
+        psize1, psize2, overlap = v
         #if i % 100 == 0 and j == i+1:
         #    print('Current job status: %s' % i)
     
-        psize1 = ns.pathwaysizes[i]
-        psize2 = ns.pathwaysizes[j]
+        seed = ns.seed_dict[(psize1, psize2, overlap)]
 
-        seed = ns.seedmat[i][j]
-    
-        perms = predictability_perm_roc(ns.s, psize1, psize2, sa, ns.iter, ns.similarity, seed)
+        perms = predictability_perm_roc(ns.s, psize1, psize2, overlap, sa, ns.iter, ns.similarity, seed)
         
-        res.append((i, j, perms))
-        #res.append((j, i, perms))
+        res.append((psize1, psize2, overlap, perms))
+        #res.append((psize2, psize1, overlap, perms))
 
     #print('Worker %s writing to file...' % num)
     #clustio.write_list(['\t'.join([str(elem) for elem in x]) for x in res], 'results_%s.txt' % num)
@@ -160,36 +168,35 @@ def _pr(q, rq, ns, num, sa):
     #print('Queuing result (%s)' % num)
     rq.put(res)
 
-def mp_auc_matrix(s, pathwaysizes, sa, similarity=False, iter=1000, procs=mp.cpu_count(), seedmat=None, pairs=None):
+def mp_auc_matrix(s, pathwaysizes, sa, similarity=False, iter=1000, procs=mp.cpu_count(), seed_dict=None):
     """
     Expects a list of lists of pathways (groups of elements) found in s.gene_names
     Returns an asymmetric matrix of AUC values where M[i][j] is the predictive value of pathway i for pathway j
     
     """
     
-    if seedmat is None:
-        print('Using random seedmatrix')
-        seedmat = N.random.rand(len(pathwaysizes), len(pathwaysizes))
+    if seed_dict is None:
+        print('Random seeds for paired perm tests not given, generating new random seeds')
+        seed_dict = dict(zip(pathwaysizes, N.random.rand(len(pathwaysizes))))
+    
+    assert len(seed_dict) == len(pathwaysizes)
 
-    M = N.zeros((len(pathwaysizes), len(pathwaysizes), iter), N.float32)
+    print('Performing permutation tests for %s sets of pathway sizes and overlaps' % len(pathwaysizes))
+
+    result_dict = {}
 
     ns = mp.Manager()
     q  = mp.Queue()
     rq = mp.Queue()
     
     ns.s = s
-    ns.pathwaysizes = pathwaysizes
     ns.similarity = similarity
     ns.iter = iter
-    ns.seedmat = seedmat
+    ns.seed_dict = seed_dict
     
     # Set up queue
 
-    if pairs is None:
-        print('Pairlist not found, performing search for all pairs')
-        pairs = list(combr(xrange(len(pathwaysizes)), 2))
-
-    qsplit = [ pairs[MP_MAX_QUEUE*i:MP_MAX_QUEUE*(i+1)] for i in xrange(len(pairs)/MP_MAX_QUEUE + 1) ] # Splits the queue up into sizes MP_MAX_QUEUE, plus a remainder list. I don't know why it works.
+    qsplit = [ pathwaysizes[MP_MAX_QUEUE*i:MP_MAX_QUEUE*(i+1)] for i in xrange(len(pathwaysizes)/MP_MAX_QUEUE + 1) ] # Splits the queue up into sizes MP_MAX_QUEUE, plus a remainder list. I don't know why it works.
 
     for combs in qsplit:
 
@@ -211,8 +218,8 @@ def mp_auc_matrix(s, pathwaysizes, sa, similarity=False, iter=1000, procs=mp.cpu
         for k in workers:
             res = rq.get() # Blocks until results queue completes, which is also when the workers terminate
             
-            for i, j, v in res:
-                M[i][j] = v
-                M[j][i] = v
+            for i, j, k, v in res:
+                result_dict[(i,j,k)] = v
+                result_dict[(j,i,k)] = v
 
-    return M
+    return result_dict
