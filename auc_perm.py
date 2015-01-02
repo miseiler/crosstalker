@@ -71,9 +71,9 @@ def permcomp(fn1, fn2, fln, pathway_dict, sizes, threshold=0.0, procs=mp.cpu_cou
     #pairs = findpathwaysizes(fn1, fn2, pathway_dict, sizes, threshold)
     #print('Calculating permutations for %s/%s possible pairs' % (len(pairs), (len(sizes) * (len(sizes) + 1)) / 2))
     
-    seedmat = N.random.rand(len(sizes))
-    result1 = mp_auc_matrix(fln, sizes, sa1, similarity=True, seedmat=seedmat, procs=procs, iter=iter)
-    result2 = mp_auc_matrix(fln, sizes, sa2, similarity=True, seedmat=seedmat, procs=procs, iter=iter)
+    seed_dict = dict(zip(sizes, N.random.rand(len(sizes))))
+    result1 = mp_auc_matrix(fln, sizes, sa1, similarity=True, procs=procs, iter=iter, seed_dict=seed_dict)
+    result2 = mp_auc_matrix(fln, sizes, sa2, similarity=True, procs=procs, iter=iter, seed_dict=seed_dict)
     return result1, result2
 
 def predictability_perm_roc(s, size1, size2, overlap, sa, iter, similarity, seed):
