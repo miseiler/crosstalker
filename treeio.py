@@ -37,7 +37,7 @@ def difftree(pathway_dict, test_cond_name, control_cond_name, infile_suffix=NO_C
     # To be performed on freshly created scripts.create_visml_from_sdata(%s_sig_connections.txt, dmatrix=True)
     
     A = VisML.VisMLTree('%s_%s.xml' % (test_cond_name, infile_suffix))
-    B = clustio.ParseNormal('sig_connections/%s_sig_connections_95.txt' % control_cond_name)
+    B = clustio.ParseNormal('sig_connections/%s_sig_connections_999.txt' % control_cond_name)
     C = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % test_cond_name)
     D = clustio.ParseNormal('auc_results/%s_results_reweight_RAW.txt' % control_cond_name)
     assert len(C) == len(D)
@@ -115,7 +115,7 @@ def create_tree(test_cond_name, control_cond_name, pathway_dict, infile_suffix=N
 
     print
     print('Creating VisML tree %s_%s.xml...' % (test_cond_name, infile_suffix))
-    tree = scripts.create_visml_from_sdata(clustio.ParseNormal('sig_connections/%s_sig_connections_95.txt' % test_cond_name), dmatrix=True)
+    tree = scripts.create_visml_from_sdata(clustio.ParseNormal('sig_connections/%s_sig_connections_999.txt' % test_cond_name), dmatrix=True)
     tree = prettify_tree(tree)
     tree.write('%s_%s.xml' % (test_cond_name, infile_suffix))
 
