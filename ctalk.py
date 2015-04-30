@@ -31,8 +31,8 @@ from random import sample
 from itertools import combinations as comb
 
 
-ITER_ENH  = 500  # Number of permutations to run for enhancement calculation. Note that higher numbers will vastly increase processing time.
-ITER_PERM = 500  # Number of permutations to run for significance calculation
+ITER_ENH  = 5000  # Number of permutations to run for enhancement calculation. Note that higher numbers will vastly increase processing time.
+ITER_PERM = 5000  # Number of permutations to run for significance calculation
 ITER_ENH_T= 1000 # Number of permutations to run to find a minimum threshold for calculating enhancement for that size pair
 
 
@@ -202,7 +202,7 @@ def calculate_enhancement(fn1, fn2, fln, pathway_dict, path_lengths, threshold=0
 
     result1, result2 = auc_perm.permcomp(fn1, fn2, fln, pathway_dict, path_lengths, threshold=threshold, iter=ITER_ENH)
     
-    nd = dict([ (k, abs(sorted(result1[k])[int(0.95 * ITER_ENH)] - sorted(result2[k])[int(0.95 * ITER_ENH)])) for k in result1 ])
+    nd = dict([ (k, abs(sorted(result1[k])[int(0.999 * ITER_ENH)] - sorted(result2[k])[int(0.999 * ITER_ENH)])) for k in result1 ])
     f  = open('auc_results/%s_vs_%s_thresh_95.txt' % (fn1, fn2), 'w')
     g  = open('auc_results/%s_vs_%s_thresh_95.txt' % (fn2, fn1), 'w')
     cp.dump(nd, f)
